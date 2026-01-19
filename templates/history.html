@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Signal History</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <meta name="theme-color" content="#2563eb">
+</head>
+<body>
+
+  <div class="dashboard">
+    <nav>
+      <a href="/">← Back to Live Dashboard</a>
+    </nav>
+
+    <h1>Signal Logs</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>BPM</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in history|reverse %}
+        <tr>
+          <td>{{ log.timestamp }}</td>
+          <td>{{ log.bpm }}</td>
+          <td class="{{ 'normal' if 60 <= log.bpm <= 100 else 'abnormal' }}">
+            {{ 'Normal' if 60 <= log.bpm <= 100 else 'Abnormal' }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  </div>
+
+</body>
+</html>
