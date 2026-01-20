@@ -50,11 +50,9 @@ if ("serviceWorker" in navigator) {
 
     document.getElementById("heart-rate").textContent = `${data.bpm} BPM`;
     document.getElementById("breathing-rate").textContent =
-<<<<<<< HEAD
       data.respiratory_rate + " breaths/min";
-=======
-      Math.round(60000 / data.rr_ms) + " breaths/min";
->>>>>>> e75fe64a53c74ce6535c6bdbc911da0671f33c99
+
+
 
     const statusEl = document.getElementById("status");
 

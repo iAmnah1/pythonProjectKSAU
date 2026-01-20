@@ -24,18 +24,12 @@ def emit_fake_data():
         # bpm normal/abnormal test: (random.randint(55,110))
         # bpm critical or not test: (random.randint(40,130))
         critical = bpm < 50 or bpm > 120
-<<<<<<< HEAD
+
         respiratory_rate = random.randint(10,30)
 
         data = {
             "bpm": bpm,
-            "respiratory_rate": respiratory_rate, #Normal is 12 to 20 per minute
-=======
-
-        data = {
-            "bpm": bpm,
-            "rr_ms": random.randint(600, 1000),
->>>>>>> e75fe64a53c74ce6535c6bdbc911da0671f33c99
+            "respiratory_rate": respiratory_rate,  # Normal is 12 to 20 per minute
             "chest_amplitude": random.randint(5, 25),
             "heart_status": "ACTIVE",
             "timestamp": datetime.now().strftime("%Y-%m-%d %I:%M:%S %p"),
