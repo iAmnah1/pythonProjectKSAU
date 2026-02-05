@@ -1,35 +1,52 @@
-  const socket = io();
+  //MQTT CONNECT 
+const client = mqtt.connect('wss://broker.emqx.io:8884/mqtt');
 
-  // Elements
-  const heartEl = document.getElementById('heart-rate');
-  const breathEl = document.getElementById('breathing-rate');
-  const statusEl = document.getElementById('status');
 
-  // Listen to real-time data from Flask SocketIO
-  socket.on('vital_data', (data) => {
-  const { bpm, rr_ms, chest_amplitude, heart_status } = data;
+const heartEl = document.getElementById('heart-rate');
+const breathEl = document.getElementById('breathing-rate');
+const statusEl = document.getElementById('status');
 
-  // Update values
-  heartEl.textContent = `${bpm} BPM`;
-  const breathingRate = Math.round((chest_amplitude / 10) || 0); // Example calc
-  breathEl.textContent = `${breathingRate} breaths/min`;
+let alertShown = false;
 
-  // Status
-  if (bpm < 60 || bpm > 100 || breathingRate < 12 || breathingRate > 20) {
-    statusEl.textContent = 'Abnormal';
-    statusEl.className = 'abnormal';
-  } else {
-    statusEl.textContent = 'Normal';
-    statusEl.className = 'normal';
-  }
-
-  // Critical status popup a message
-  if (data.critical && !alertShown) {
-    alertShown = true;
-    alert(
-      "⚠️ CRITICAL CONDITION ⚠️\n\n" +
-      "Patient requires immediate medical attention."
-    );
-}
-
+//  MQTT EVENTS
+client.on('connect', () => {
+  console.log('✅ Connected to MQTT');
+  client.subscribe('health/data/demo');
 });
+
+client.on('message', (topic, message) => {
+  const data = JSON.parse(message.toString());
+  console.log('📡 Data:', data);
+
+  //  HEART 
+  const ecg = data.ecg_raw;
+  heartEl.textContent = ${ecg} BPM;
+
+  // RESPIRATION
+  const respiration = data.respiration_rate;
+  breathEl.textContent = ${respiration} breaths/min;
+
+ 
+  if (
+    ecg < 60  ecg > 100 
+    respiration < 12 || respiration > 20
+  ) {
+    statusEl.textContent = 'CRITICAL';
+    statusEl.style.color = 'red';
+
+    if (!alertShown) {
+      alertShown = true;
+      document.getElementById("critical-popup").classList.add("show");
+    }
+  } else {
+    statusEl.textContent = 'NORMAL';
+    statusEl.style.color = 'green';
+    alertShown = false;
+  }
+});
+
+
+function closePopup() {
+  document.getElementById("critical-popup").classList.remove("show");
+  alertShown = false;
+}
