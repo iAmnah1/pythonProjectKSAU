@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <title>Patient Dashboard</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- MQTT WebSocket -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
   <meta name="theme-color" content="#2563eb">
 </head>
+
 <body>
   <div class="dashboard">
-
-    <nav>
-      <a href="/history">View History Logs →</a>
-    </nav>
 
     <h1>Patient Dashboard</h1>
 
@@ -34,62 +34,19 @@
 
   </div>
 
-
-  <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/static/sw.js");
-}
-</script>
-
-<script>
-  const socket = io();
-  let alertShown = false;
-
-  socket.on("vital_data", (data) => {
-    console.log("Received:", data);
-
-    document.getElementById("heart-rate").textContent = `${data.bpm} BPM`;
-    document.getElementById("breathing-rate").textContent =
-      data.respiratory_rate + " breaths/min";
-
-
-
-    const statusEl = document.getElementById("status");
-
-    if (data.critical) {
-      statusEl.textContent = "CRITICAL";
-      statusEl.style.color = "red";
-
-      if (!alertShown) {
-        alertShown = true;
-        document.getElementById("critical-popup").classList.add("show");
-      }
-    } else {
-      statusEl.textContent = "NORMAL";
-      statusEl.style.color = "green";
-    }
-  });
-
-  function closePopup() {
-    document.getElementById("critical-popup").classList.remove("show");
-    alertShown = false;
-  }
-</script>
-
-
-<div id="critical-popup" class="popup">
-  <div class="popup-content">
-    <h2>⚠️ Critical Condition</h2>
-    <p>
-      Abnormal heart rate detected.<br />
-      Please contact the medical team immediately.
-    </p>
-    <button onclick="closePopup()">Acknowledge</button>
+  <div id="critical-popup" class="popup">
+    <div class="popup-content">
+      <h2>⚠️ Critical Condition</h2>
+      <p>
+        Abnormal vital signs detected.<br />
+        Please contact the medical team immediately.
+      </p>
+      <button onclick="closePopup()">Acknowledge</button>
+    </div>
   </div>
-</div>
 
+  
+  <script src="script.js"></script>
 
 </body>
-
 </html>
-
