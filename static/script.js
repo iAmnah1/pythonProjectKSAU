@@ -1,34 +1,24 @@
-  //MQTT CONNECT 
-const client = mqtt.connect('wss://broker.emqx.io:8884/mqtt');
+// الاتصال بـ Flask SocketIO
+const socket = io();
 
+let alertShown = false;
 
 const heartEl = document.getElementById('heart-rate');
 const breathEl = document.getElementById('breathing-rate');
 const statusEl = document.getElementById('status');
 
-let alertShown = false;
+// استقبال البيانات من Flask
+socket.on('vital_data', (data) => {
+  console.log('📡 Data received:', data);
 
-//  MQTT EVENTS
-client.on('connect', () => {
-  console.log('✅ Connected to MQTT');
-  client.subscribe('health/data/demo');
-});
+  const bpm = data.bpm;
+  const respiration = data.respiratory_rate;
 
-client.on('message', (topic, message) => {
-  const data = JSON.parse(message.toString());
-  console.log('📡 Data:', data);
+  heartEl.textContent = bpm + ' BPM';
+  breathEl.textContent = respiration + ' breaths/min';
 
-  //  HEART 
-  const ecg = data.ecg_raw;
-  heartEl.textContent = ${ecg} BPM;
-
-  // RESPIRATION
-  const respiration = data.respiration_rate;
-  breathEl.textContent = ${respiration} breaths/min;
-
- 
   if (
-    ecg < 60  ecg > 100 
+    bpm < 60  bpm > 100 
     respiration < 12 || respiration > 20
   ) {
     statusEl.textContent = 'CRITICAL';
@@ -36,7 +26,7 @@ client.on('message', (topic, message) => {
 
     if (!alertShown) {
       alertShown = true;
-      document.getElementById("critical-popup").classList.add("show");
+      document.getElementById('critical-popup').classList.add('show');
     }
   } else {
     statusEl.textContent = 'NORMAL';
@@ -45,8 +35,8 @@ client.on('message', (topic, message) => {
   }
 });
 
-
+// زر إغلاق التنبيه
 function closePopup() {
-  document.getElementById("critical-popup").classList.remove("show");
+  document.getElementById('critical-popup').classList.remove('show');
   alertShown = false;
 }
